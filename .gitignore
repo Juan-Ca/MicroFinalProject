@@ -5,5 +5,9 @@ Final_project/Nucleo/*
 !Final_project/Nucleo/Sources
 !Final_project/Nucleo/Headers
 
+Final_project/Discovery/*
+!Final_project/Discovery/Sources
+!Final_project/Discovery/Headers
+
 
 
