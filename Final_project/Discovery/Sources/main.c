@@ -9,12 +9,9 @@
 
 #include "stm32f4xx_hal.h"              // Keil::Device:STM32Cube HAL:Common
 #include "cmsis_os.h"                   // ARM::CMSIS:RTOS:Keil RTX
-#include "RTE_Components.h"             // Component selection
-#include "Thread_7segment.h"								// Displays the temperature in the 4 digit 7 segment display
-#include "Thread_adc.h"
-#include "Thread_keypad.h"
-#include "Thread_accelerometer.h"
+#include "RTE_Components.h" 						// Component selection
 #include "timer.h"
+#include "Thread_accelerometer.h"
 
 char LED_FLAG;
 extern void initializeLED_IO			(void);
@@ -88,14 +85,10 @@ int main (void) {
 
 	/* User codes goes here*/
 	
-	Init_TIM3_Config(&handle_time3);
 	Init_TIM4_Config(&handle_tim4);
   //Start mutex				                      
 	uart_state_mutex_id = osMutexCreate(osMutex(uart_state_mutex));
 	//start_Thread_LED();                       
-	start_Thread_keypad();
-	start_Thread_adc();
-	start_Thread_7segment();
 	start_Thread_accelerometer();
 	
 	/* User codes ends here*/
@@ -112,10 +105,6 @@ void EXTI0_IRQHandler(void){
 	HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0); 	
 }
 
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *handle_tim){
-	//Signal to Thread_ADC every 100Hz to get ADC values and process them
-	osSignalSet ((osThreadId)getADCThreadId(), 0x0001);
-}
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 	//Signal to read values from ACC
