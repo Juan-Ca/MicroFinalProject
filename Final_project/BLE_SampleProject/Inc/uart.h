@@ -13,5 +13,7 @@
 #include "stm32f4xx_hal.h"
 
 void UART_Init(UART_HandleTypeDef* huart1);
+HAL_StatusTypeDef UART_Receive_Data(uint8_t *buffer);
+HAL_StatusTypeDef UART_Transmit_Data(uint8_t *buffer);
 
 #endif

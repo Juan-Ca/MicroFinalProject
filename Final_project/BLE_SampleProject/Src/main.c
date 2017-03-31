@@ -46,6 +46,7 @@
 #include "debug.h"
 #include "stm32_bluenrg_ble.h"
 #include "bluenrg_utils.h"
+#include "uart.h"
 
 #include <string.h>
 #include <stdio.h>
@@ -82,6 +83,10 @@ extern volatile uint8_t set_connectable;
 extern volatile int connected;
 extern AxesRaw_t axes_data;
 uint8_t bnrg_expansion_board = IDB04A1; /* at startup, suppose the X-NUCLEO-IDB04A1 is used */
+
+UART_HandleTypeDef huart1;
+uint8_t data_buffer[10];
+uint8_t data_buffer_transmit[10];
 /**
  * @}
  */
@@ -273,14 +278,32 @@ int main(void)
 
   /* Set output power level */
   ret = aci_hal_set_tx_power_level(1,4);
-
+	
+	UART_Init(&huart1);
+	memset(data_buffer_transmit, 2, 10);
+	UART_Transmit_Data(data_buffer_transmit);
+	//UART_Receive_Data(data_buffer);
+	//memset(data_buffer, 2, 10);
+	//BOOL flag = TRUE;
   while(1)
   {
-    HCI_Process();
-    User_Process(&axes_data);
+    //HCI_Process();
+    //User_Process(&axes_data);
 #if NEW_SERVICES
-    Update_Time_Characteristics();
+    //Update_Time_Characteristics();
 #endif
+//		if(flag){
+//			HAL_UART_Receive(&huart1, data_buffer, 10, 10000);
+//			flag = FALSE;
+//			for(uint8_t i = 0; i < 10; i++){
+//				printf("data_buffer[%d]= %d\n", i, data_buffer[i]);
+//			}
+//			
+//		}
+		//printf("data_buffer[0]= %d\n", data_buffer[0]);
+		//HAL_UART_Transmit(&huart1, data_buffer, 10, 2000);
+		//printf("uart status code = %d\n", HAL_UART_GetState(&huart1));
+		printf("%c\n", 243);
   }
 }
 

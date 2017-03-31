@@ -61,6 +61,8 @@ volatile uint32_t ms_counter = 0;
 volatile uint8_t button_event = 0;
 /* SPI handler declared in "main.c" file */
 extern SPI_HandleTypeDef SpiHandle;
+/* UART handler declared in "main.c" file */
+extern UART_HandleTypeDef huart1;
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
@@ -147,7 +149,6 @@ void BNRG_SPI_EXTI_IRQHandler(void)
   HAL_GPIO_EXTI_IRQHandler(BNRG_SPI_EXTI_PIN);
 }
 
-
 /**
   * @brief  This function handles the Push Button interrupt request.
   * @param  None
@@ -158,6 +159,16 @@ void PUSH_BUTTON_EXTI_IRQHandler(void)
   HAL_GPIO_EXTI_IRQHandler(KEY_BUTTON_PIN);
   
   button_event = 1;
+}
+
+/**
+  * @brief  This function handles the UART interrupt request.
+  * @param  None
+  * @retval None
+  */
+void USART1_IRQHandler(void){
+	
+	HAL_UART_IRQHandler(&huart1);
 }
 
 /******************************************************************************/

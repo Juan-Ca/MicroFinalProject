@@ -2,8 +2,8 @@
 
 
 Final_project/BLE_SampleProject/*
-!Final_project/BLE_SampleProject/Sources
-!Final_project/BLE_SampleProject/Headers
+!Final_project/BLE_SampleProject/Src
+!Final_project/BLE_SampleProject/Inc
 
 Final_project/Discovery/*
 !Final_project/Discovery/Sources
