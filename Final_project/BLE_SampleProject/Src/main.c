@@ -291,15 +291,15 @@ int main(void)
 	UART_Init(&huart1);
 	//memset(data_buffer_transmit, 2, 10);
 	//UART_Transmit_Data((uint8_t *)values, 1200);
-	UART_Receive_Data((uint8_t *)x_values, 1200);
+	//UART_Receive_Data((uint8_t *)x_values, 1200);
 	//memset(data_buffer, 2, 10);
 	//BOOL flag = TRUE;
   while(1)
   {
-    //HCI_Process();
-    //User_Process(&axes_data);
+    HCI_Process();
+    User_Process(&axes_data);
 #if NEW_SERVICES
-    //Update_Time_Characteristics();
+    Update_Time_Characteristics();
 #endif
 //		if(flag){
 //			HAL_UART_Receive(&huart1, data_buffer, 10, 10000);
