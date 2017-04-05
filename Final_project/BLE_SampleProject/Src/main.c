@@ -96,6 +96,15 @@ extern float x_values[300], y_values[300], z_values[300];
 //															3853,3828,3802,3774,3744,3712,3679,3644,3607,3569,3530,3488,3446,3401,3356,3308,3260,3210,3158,3105,3051,
 //															2995,2938,2880,2820,2759,2697,2634,2570,2504,2437,2370,2301,2231,2160,2089,2016,1943,1868,1793,1717,1640,
 //															1563,1485,1406,1326,1246,1166,1085,1003,921,839,756,673,589,506,422,338,253,169,84,0};
+
+const int32_t vals[250] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+													 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+													 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,42,127,
+													 211,295,380,464,547,631,714,797,880,962,1044,1125,1206,1286,1366,1445,1524,1602,1679,1755,1831,1905,1979,
+													 2053,2125,2196,2266,2335,2404,2471,2537,2602,2666,2728,2790,2850,2909,2967,3023,3078,3132,3184,3235,3284,
+													 3332,3379,3424,3467,3509,3550,3589,3626,3661,3696,3728,3759,3788,3815,3841,3865,3888,3908,3927,3944,3960,
+													 3973,3985,3996,4004,0,0,0,0,0,4017,4013,4008,4000,3991,3980,3967,3952,3936,3918,3898,3877,
+													 3853,3828,3802,3774,3744,3712,3679,3644,3607,3569,3530,3488};
 /**
  * @}
  */
@@ -248,19 +257,19 @@ int main(void)
   
   PRINTF("SERVER: BLE Stack Initialized\n");
   
-  ret = Add_Acc_Service();
+//  ret = Add_Acc_Service();
+//  
+//  if(ret == BLE_STATUS_SUCCESS)
+//    PRINTF("Acc service added successfully.\n");
+//  else
+//    PRINTF("Error while adding Acc service.\n");
   
-  if(ret == BLE_STATUS_SUCCESS)
-    PRINTF("Acc service added successfully.\n");
-  else
-    PRINTF("Error while adding Acc service.\n");
-  
-  ret = Add_Environmental_Sensor_Service();
-  
-  if(ret == BLE_STATUS_SUCCESS)
-    PRINTF("Environmental Sensor service added successfully.\n");
-  else
-    PRINTF("Error while adding Environmental Sensor service.\n");
+//  ret = Add_Environmental_Sensor_Service();
+//  
+//  if(ret == BLE_STATUS_SUCCESS)
+//    PRINTF("Environmental Sensor service added successfully.\n");
+//  else
+//    PRINTF("Error while adding Environmental Sensor service.\n");
 
 #if NEW_SERVICES
   /* Instantiate Timer Service with two characteristics:
@@ -294,13 +303,28 @@ int main(void)
 	//UART_Receive_Data((uint8_t *)x_values, 1200);
 	//memset(data_buffer, 2, 10);
 	//BOOL flag = TRUE;
+	uint8_t vals1[250], vals2[250], vals3[250], vals4[250];
+	int32_t received[250];
   while(1)
   {
+		memcpy((uint8_t *)vals, vals1, 250);
+		memcpy((uint8_t *)vals + 250, vals2, 250);
+		memcpy((uint8_t *)vals + 500, vals3, 250);
+		memcpy((uint8_t *)vals + 750, vals4, 250);
+		
+		memcpy(vals1, received, 250);
+		memcpy(vals2, received + 250, 250);
+		memcpy(vals3, received + 500, 250);
+		memcpy(vals4, received + 750, 250);
+		
+		for(uint8_t i = 0; i < 250; i++){
+			printf("received[%d] = %d\n", i, received[i]);
+		}
     HCI_Process();
-    User_Process(&axes_data);
-#if NEW_SERVICES
-    Update_Time_Characteristics();
-#endif
+    //User_Process(&axes_data);
+//#if NEW_SERVICES
+    //Update_Time_Characteristics();
+//#endif
 //		if(flag){
 //			HAL_UART_Receive(&huart1, data_buffer, 10, 10000);
 //			flag = FALSE;

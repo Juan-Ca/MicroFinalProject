@@ -93,6 +93,11 @@ do {\
   #define COPY_TEMP_CHAR_UUID(uuid_struct)         COPY_UUID_128(uuid_struct,0x05,0x36,0x6e,0x80, 0xcf,0x3a, 0x11,0xe1, 0x9a,0xb4, 0x00,0x02,0xa5,0xd5,0xc5,0x1b)
   #define COPY_PRESS_CHAR_UUID(uuid_struct)        COPY_UUID_128(uuid_struct,0x06,0x36,0x6e,0x80, 0xcf,0x3a, 0x11,0xe1, 0x9a,0xb4, 0x00,0x02,0xa5,0xd5,0xc5,0x1b)
   #define COPY_HUMIDITY_CHAR_UUID(uuid_struct)     COPY_UUID_128(uuid_struct,0x07,0x36,0x6e,0x80, 0xcf,0x3a, 0x11,0xe1, 0x9a,0xb4, 0x00,0x02,0xa5,0xd5,0xc5,0x1b)
+
+	#define COPY_NUCLEO_SERVICE_UUID(uuid_struct)  	COPY_UUID_128(uuid_struct,0x04,0x36,0x6e,0x80, 0xcf,0x3a, 0x11,0xe1, 0x9a,0xb4, 0x00,0x02,0xa5,0xd5,0xc5,0x1b)
+  #define COPY_X_UUID(uuid_struct)         				COPY_UUID_128(uuid_struct,0x05,0x36,0x6e,0x80, 0xcf,0x3a, 0x11,0xe1, 0x9a,0xb4, 0x00,0x02,0xa5,0xd5,0xc5,0x1b)
+  #define COPY_Y_UUID(uuid_struct)        				COPY_UUID_128(uuid_struct,0x06,0x36,0x6e,0x80, 0xcf,0x3a, 0x11,0xe1, 0x9a,0xb4, 0x00,0x02,0xa5,0xd5,0xc5,0x1b)
+  #define COPY_Z_UUID(uuid_struct)     						COPY_UUID_128(uuid_struct,0x07,0x36,0x6e,0x80, 0xcf,0x3a, 0x11,0xe1, 0x9a,0xb4, 0x00,0x02,0xa5,0xd5,0xc5,0x1b)
               
   // Time service: uuid = 0x08, 0x36, 0x6e, 0x80, 0xcf, 0x3a, 0x11, 0xe1, 0x9a, 0xb4, 0x00, 0x02, 0xa5, 0xd5, 0xc5, 0x1b
   //      straight uuid = 0x08366e80cf3a11e19ab40002a5d5c51b
@@ -112,6 +117,11 @@ do {\
   #define COPY_TEMP_CHAR_UUID(uuid_struct)         COPY_UUID_128(uuid_struct,0xa3,0x2e,0x55,0x20, 0xe4,0x77, 0x11,0xe2, 0xa9,0xe3, 0x00,0x02,0xa5,0xd5,0xc5,0x1b)
   #define COPY_PRESS_CHAR_UUID(uuid_struct)        COPY_UUID_128(uuid_struct,0xcd,0x20,0xc4,0x80, 0xe4,0x8b, 0x11,0xe2, 0x84,0x0b, 0x00,0x02,0xa5,0xd5,0xc5,0x1b)
   #define COPY_HUMIDITY_CHAR_UUID(uuid_struct)     COPY_UUID_128(uuid_struct,0x01,0xc5,0x0b,0x60, 0xe4,0x8c, 0x11,0xe2, 0xa0,0x73, 0x00,0x02,0xa5,0xd5,0xc5,0x1b)
+	
+	#define COPY_NUCLEO_SERVICE_UUID(uuid_struct)  	COPY_UUID_128(uuid_struct,0x42,0x82,0x1a,0x40, 0xe4,0x77, 0x11,0xe2, 0x82,0xd0, 0x00,0x02,0xa5,0xd5,0xc5,0x1b)
+  #define COPY_X_UUID(uuid_struct)         				COPY_UUID_128(uuid_struct,0xa3,0x2e,0x55,0x20, 0xe4,0x77, 0x11,0xe2, 0xa9,0xe3, 0x00,0x02,0xa5,0xd5,0xc5,0x1b)
+  #define COPY_Y_UUID(uuid_struct)        				COPY_UUID_128(uuid_struct,0xcd,0x20,0xc4,0x80, 0xe4,0x8b, 0x11,0xe2, 0x84,0x0b, 0x00,0x02,0xa5,0xd5,0xc5,0x1b)
+  #define COPY_Z_UUID(uuid_struct)     						COPY_UUID_128(uuid_struct,0x01,0xc5,0x0b,0x60, 0xe4,0x8c, 0x11,0xe2, 0xa0,0x73, 0x00,0x02,0xa5,0xd5,0xc5,0x1b)
 #endif
 
 /* Store Value into a buffer in Little Endian Format */
@@ -121,9 +131,60 @@ do {\
  * @}
  */
 
+
 /** @defgroup SENSOR_SERVICE_Exported_Functions 
  * @{
  */ 
+/**
+ * @brief  Add a nucleo service using a vendor specific profile.
+ *
+ * @param  None
+ * @retval tBleStatus Status
+ */
+uint16_t nucleoServHandle, xAxisHandle, yAxisHandle, zAxisHandle;
+tBleStatus Add_Nucleo_Service(void)
+{
+  tBleStatus ret;
+
+  uint8_t uuid[16];
+  
+  COPY_NUCLEO_SERVICE_UUID(uuid);
+  ret = aci_gatt_add_serv(UUID_TYPE_128,  uuid, PRIMARY_SERVICE, 7,
+                          &nucleoServHandle);
+  if (ret != BLE_STATUS_SUCCESS) goto fail;    
+  
+  COPY_X_UUID(uuid);
+  ret =  aci_gatt_add_char(nucleoServHandle, UUID_TYPE_128, uuid, 250,
+                           CHAR_PROP_NOTIFY|CHAR_PROP_READ, ATTR_PERMISSION_NONE, 
+													 GATT_NOTIFY_READ_REQ_AND_WAIT_FOR_APPL_RESP,
+                           16, 0, &xAxisHandle);
+  if (ret != BLE_STATUS_SUCCESS) goto fail;
+  
+  COPY_Y_UUID(uuid);  
+  ret =  aci_gatt_add_char(nucleoServHandle, UUID_TYPE_128, uuid, 250,
+                           CHAR_PROP_NOTIFY|CHAR_PROP_READ,
+                           ATTR_PERMISSION_NONE,
+                           GATT_NOTIFY_READ_REQ_AND_WAIT_FOR_APPL_RESP,
+                           16, 0, &yAxisHandle);
+  if (ret != BLE_STATUS_SUCCESS) goto fail;
+	
+	COPY_Z_UUID(uuid);  
+  ret =  aci_gatt_add_char(nucleoServHandle, UUID_TYPE_128, uuid, 250,
+                           CHAR_PROP_NOTIFY|CHAR_PROP_READ,
+                           ATTR_PERMISSION_NONE,
+                           GATT_NOTIFY_READ_REQ_AND_WAIT_FOR_APPL_RESP,
+                           16, 0, &zAxisHandle);
+  if (ret != BLE_STATUS_SUCCESS) goto fail;
+  
+  PRINTF("Service NUCELO added. Handle 0x%04X, X axis Charac handle: 0x%04X, Y Axis handle: 0x%04X, Z Axis handle: 0x%04X\n",nucleoServHandle, xAxisHandle, yAxisHandle, zAxisHandle);	
+  return BLE_STATUS_SUCCESS; 
+  
+fail:
+  PRINTF("Error while adding NUCLEO service.\n");
+  return BLE_STATUS_ERROR ;
+    
+}
+
 /**
  * @brief  Add an accelerometer service using a vendor specific profile.
  *
@@ -165,28 +226,6 @@ fail:
 }
 
 /**
- * @brief  Send a notification for a Free Fall detection.
- *
- * @param  None
- * @retval tBleStatus Status
- */
-tBleStatus Free_Fall_Notify(void)
-{  
-  uint8_t val;
-  tBleStatus ret;
-	
-  val = 0x01;	
-  ret = aci_gatt_update_char_value(accServHandle, freeFallCharHandle, 0, 1,
-                                   &val);
-	
-  if (ret != BLE_STATUS_SUCCESS){
-    PRINTF("Error while updating ACC characteristic.\n") ;
-    return BLE_STATUS_ERROR ;
-  }
-  return BLE_STATUS_SUCCESS;	
-}
-
-/**
  * @brief  Update acceleration characteristic value.
  *
  * @param  Structure containing acceleration value in mg
@@ -209,6 +248,53 @@ tBleStatus Acc_Update(AxesRaw_t *data)
   }
   return BLE_STATUS_SUCCESS;	
 }
+
+
+/**
+ * @brief  Send a notification for a Free Fall detection.
+ *
+ * @param  None
+ * @retval tBleStatus Status
+ */
+tBleStatus Free_Fall_Notify(void)
+{  
+  uint8_t val;
+  tBleStatus ret;
+	
+  val = 0x01;	
+  ret = aci_gatt_update_char_value(accServHandle, freeFallCharHandle, 0, 1,
+                                   &val);
+	
+  if (ret != BLE_STATUS_SUCCESS){
+    PRINTF("Error while updating ACC characteristic.\n") ;
+    return BLE_STATUS_ERROR ;
+  }
+  return BLE_STATUS_SUCCESS;	
+}
+
+///**
+// * @brief  Update acceleration characteristic value.
+// *
+// * @param  Structure containing acceleration value in mg
+// * @retval Status
+// */
+//tBleStatus Acc_Update(AxesRaw_t *data)
+//{  
+//  tBleStatus ret;    
+//  uint8_t buff[6];
+//    
+//  STORE_LE_16(buff,data->AXIS_X);
+//  STORE_LE_16(buff+2,data->AXIS_Y);
+//  STORE_LE_16(buff+4,data->AXIS_Z);
+//	
+//  ret = aci_gatt_update_char_value(accServHandle, accCharHandle, 0, 6, buff);
+//	
+//  if (ret != BLE_STATUS_SUCCESS){
+//    PRINTF("Error while updating ACC characteristic.\n") ;
+//    return BLE_STATUS_ERROR ;
+//  }
+//  return BLE_STATUS_SUCCESS;	
+//}
 
 /**
  * @brief  Add the Environmental Sensor service.
@@ -349,8 +435,7 @@ tBleStatus Temp_Update(int16_t temp)
     PRINTF("Error while updating TEMP characteristic.\n") ;
     return BLE_STATUS_ERROR ;
   }
-  return BLE_STATUS_SUCCESS;
-	
+  return BLE_STATUS_SUCCESS;	
 }
 
 /**
