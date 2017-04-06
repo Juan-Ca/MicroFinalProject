@@ -270,7 +270,12 @@ int main(void)
 //    PRINTF("Environmental Sensor service added successfully.\n");
 //  else
 //    PRINTF("Error while adding Environmental Sensor service.\n");
+  ret = Add_Nucleo_Service();
 
+  if(ret == BLE_STATUS_SUCCESS)
+    PRINTF("NUCLEO service added successfully.\n");
+  else
+    PRINTF("Error while adding NUCLEO service.\n");  
 #if NEW_SERVICES
   /* Instantiate Timer Service with two characteristics:
    * - seconds characteristic (Readable only)
@@ -307,19 +312,6 @@ int main(void)
 	int32_t received[250];
   while(1)
   {
-		memcpy((uint8_t *)vals, vals1, 250);
-		memcpy((uint8_t *)vals + 250, vals2, 250);
-		memcpy((uint8_t *)vals + 500, vals3, 250);
-		memcpy((uint8_t *)vals + 750, vals4, 250);
-		
-		memcpy(vals1, received, 250);
-		memcpy(vals2, received + 250, 250);
-		memcpy(vals3, received + 500, 250);
-		memcpy(vals4, received + 750, 250);
-		
-		for(uint8_t i = 0; i < 250; i++){
-			printf("received[%d] = %d\n", i, received[i]);
-		}
     HCI_Process();
     //User_Process(&axes_data);
 //#if NEW_SERVICES

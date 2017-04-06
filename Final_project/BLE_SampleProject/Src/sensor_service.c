@@ -186,6 +186,32 @@ fail:
 }
 
 /**
+ * @brief  Update Nucleo characteristic value.
+ *
+ * @param  Array of float values
+ * @retval Status
+ */
+tBleStatus Nucleo_Update(float *values)
+{  
+  tBleStatus ret;    
+  uint8_t buff[250];
+  /* 
+		Need to find a way to store 32-bit values into 8-bit array(s)
+  
+	for(uint8_t i = 0; i < 250; i++){
+		STORE_LE_16(buff + 2*i, (int)values[i]);
+	}
+	*/
+  ret = aci_gatt_update_char_value(accServHandle, accCharHandle, 0, 250, buff);
+	
+  if (ret != BLE_STATUS_SUCCESS){
+    PRINTF("Error while updating ACC characteristic.\n") ;
+    return BLE_STATUS_ERROR ;
+  }
+  return BLE_STATUS_SUCCESS;	
+}
+
+/**
  * @brief  Add an accelerometer service using a vendor specific profile.
  *
  * @param  None

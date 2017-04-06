@@ -114,6 +114,8 @@ typedef struct {
 /** @addtogroup SENSOR_SERVICE_Exported_Functions
  *  @{
  */
+tBleStatus Add_Nucleo_Service(void);
+tBleStatus Nucleo_Update(float *values);
 tBleStatus Add_Acc_Service(void);
 tBleStatus Acc_Update(AxesRaw_t *data);
 tBleStatus Add_Environmental_Sensor_Service(void);
