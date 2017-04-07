@@ -6,7 +6,7 @@ extern uint8_t data_buffer[10];
 
 static void GPIO_UART_Init(void);
 
-extern float x_values[250], y_values[250], z_values[250];
+float x_values[300], y_values[300], z_values[300];
 
 void UART_Init(UART_HandleTypeDef* huart){
 	/*
