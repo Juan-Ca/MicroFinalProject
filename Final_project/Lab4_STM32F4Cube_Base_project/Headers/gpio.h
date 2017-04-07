@@ -15,7 +15,7 @@
 void configureUSARTGPIO(void);
 void configureDACGPIO(void);
 void configureButton(void);
-
+void InitAccGPIO(void);
 
 
 

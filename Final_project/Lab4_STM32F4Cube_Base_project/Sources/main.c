@@ -179,6 +179,7 @@ int main (void){
 	ConfigureTIM();
 	ConfigureDMA();
 	ConfigureDAC();
+	InitAccGPIO();
 	
 	/* User codes ends here*/
   

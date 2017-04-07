@@ -44,3 +44,18 @@ void configureButton(void)
 	__HAL_RCC_GPIOA_CLK_ENABLE();
 	HAL_GPIO_Init(GPIOA, &init_gpio);
 }
+
+/* Function: InitAccGPIO()
+* Description: Initialises the accelerometer gpio pins
+*/
+void InitAccGPIO(void){
+	__HAL_RCC_GPIOE_CLK_ENABLE();
+	GPIO_InitTypeDef GPIO_Acc;
+	
+	GPIO_Acc.Pin = GPIO_PIN_0;
+	GPIO_Acc.Mode = GPIO_MODE_IT_RISING;
+	GPIO_Acc.Pull = GPIO_PULLDOWN;
+	GPIO_Acc.Speed = GPIO_SPEED_FREQ_LOW;
+	
+	HAL_GPIO_Init(GPIOE, &GPIO_Acc);
+}
