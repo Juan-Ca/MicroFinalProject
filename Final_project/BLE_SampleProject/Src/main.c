@@ -47,6 +47,7 @@
 #include "stm32_bluenrg_ble.h"
 #include "bluenrg_utils.h"
 #include "uart.h"
+#include "nucleo_service.h"
 
 #include <string.h>
 #include <stdio.h>
@@ -85,7 +86,7 @@ extern AxesRaw_t axes_data;
 uint8_t bnrg_expansion_board = IDB04A1; /* at startup, suppose the X-NUCLEO-IDB04A1 is used */
 
 UART_HandleTypeDef huart1;
-extern float x_values[300], y_values[300], z_values[300];
+float x_values[250], y_values[250], z_values[250];
 //const uint32_t values[300] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 //															0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 //															0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,42,127,
@@ -113,7 +114,7 @@ const int32_t vals[250] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
  * @{
  */
 /* Private function prototypes -----------------------------------------------*/
-void User_Process(AxesRaw_t* p_axes);
+void User_Process(AxesRaw_t* p_axes, uint8_t *counter);
 /**
  * @}
  */
@@ -143,7 +144,7 @@ void User_Process(AxesRaw_t* p_axes);
  */
 int main(void)
 {
-  const char *name = "BlueNRG";
+  const char *name = "amor";
   uint8_t SERVER_BDADDR[] = {0x12, 0x34, 0x00, 0xE1, 0x80, 0x03};
   uint8_t bdaddr[BDADDR_SIZE];
   uint16_t service_handle, dev_name_char_handle, appearance_char_handle;
@@ -273,9 +274,9 @@ int main(void)
   ret = Add_Nucleo_Service();
 
   if(ret == BLE_STATUS_SUCCESS)
-    PRINTF("NUCLEO service added successfully.\n");
+    PRINTF("X service added successfully.\n");
   else
-    PRINTF("Error while adding NUCLEO service.\n");  
+    PRINTF("Error while adding X service.\n");  
 #if NEW_SERVICES
   /* Instantiate Timer Service with two characteristics:
    * - seconds characteristic (Readable only)
@@ -310,10 +311,13 @@ int main(void)
 	//BOOL flag = TRUE;
 	uint8_t vals1[250], vals2[250], vals3[250], vals4[250];
 	int32_t received[250];
+	char flag = 0;
+	uint8_t counter = 0;
   while(1)
   {
     HCI_Process();
-    //User_Process(&axes_data);
+		 //x_Val_Update(float value)
+    User_Process(&axes_data, &counter);
 //#if NEW_SERVICES
     //Update_Time_Characteristics();
 //#endif
@@ -339,7 +343,7 @@ int main(void)
  * @param  AxesRaw_t* p_axes
  * @retval None
  */
-void User_Process(AxesRaw_t* p_axes)
+void User_Process(AxesRaw_t* p_axes, uint8_t *counter)
 {
   if(set_connectable){
     setConnectable();
@@ -360,7 +364,30 @@ void User_Process(AxesRaw_t* p_axes)
       p_axes->AXIS_Y -= 1;
       p_axes->AXIS_Z += 2;
       PRINTF("ACC: X=%6d Y=%6d Z=%6d\r\n", p_axes->AXIS_X, p_axes->AXIS_Y, p_axes->AXIS_Z);
-      Acc_Update(p_axes);
+      //Acc_Update(p_axes);
+			float values[10] = {1000.0, 234.33, 202.21, 234.33, 202.21, 234.33, 202.21, 7.0, 8.34, 9.0233};
+			if(*counter == 0){
+				for(uint8_t i = 0; i < 10; i++){
+					x_Val_Update(values[i]);
+					HAL_Delay(5);
+				}
+				(*counter)++;
+				printf("Sent X, counter = %d\n",*counter);
+			}else if(*counter == 1){
+				for(uint8_t i = 0; i < 10; i++){
+					y_Val_Update(values[i]);
+					HAL_Delay(5);
+				}
+				(*counter)++;
+				printf("Sent Y, counter = %d\n",*counter);
+			}else if(*counter == 2){
+				for(uint8_t i = 0; i < 10; i++){
+					z_Val_Update(values[i]);
+					HAL_Delay(5);
+				}
+				*counter = 0;
+				printf("Sent Z, counter = %d\n",*counter);
+			}
     }
   }
 }
