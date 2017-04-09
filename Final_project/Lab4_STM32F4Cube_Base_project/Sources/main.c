@@ -143,7 +143,7 @@ SPI_HandleTypeDef * getHandleSPI(void){
 	return &handleSPI;
 }
 
-int main (void){
+    int main (void){
 	osThreadId accelThread;
 	osThreadId USARTThread;
 	osThreadId buttonThread;
@@ -153,13 +153,15 @@ int main (void){
   SystemClock_Config();                     /* Configure the System Clock     */
 
 	/* User codes goes here*/
+    InitAccGPIO();
+    
 	memset(pData1,0,300);
 	memset(pData2,0,300);
 	
 	__HAL_RCC_GPIOA_CLK_ENABLE();
 	__HAL_RCC_DAC_CLK_ENABLE();
 	__DMA1_CLK_ENABLE(); 
-	__DMA2_CLK_ENABLE(); 
+	//__DMA2_CLK_ENABLE(); 
 	
 	__HAL_RCC_GPIOA_CLK_ENABLE();
 	__HAL_RCC_GPIOE_CLK_ENABLE();
@@ -179,7 +181,7 @@ int main (void){
 	ConfigureTIM();
 	ConfigureDMA();
 	ConfigureDAC();
-	InitAccGPIO();
+	
 	
 	/* User codes ends here*/
   
