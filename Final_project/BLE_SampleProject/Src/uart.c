@@ -6,7 +6,9 @@ extern uint8_t data_buffer[10];
 
 static void GPIO_UART_Init(void);
 
-float x_values[300], y_values[300], z_values[300];
+float x_values[250], y_values[250], z_values[250];
+
+BOOL READY = FALSE;
 
 void UART_Init(UART_HandleTypeDef* huart){
 	/*
@@ -73,21 +75,23 @@ void GPIO_UART_Init(void){
 	GPIO_InitStruct.Alternate = GPIO_AF7_USART1;
 	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 }
-char flag = 0;
+int flag = 0;
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart1){
 	if(huart1->Instance == USART1){
 		
 		}
-		if(!flag){
-			UART_Receive_Data((uint8_t *)y_values, 1200);
+		if(flag == 0){
+			UART_Receive_Data((uint8_t *)y_values, 1000);
 			flag = 1;
-		}else{
-			UART_Receive_Data((uint8_t *)z_values, 1200);
+		}else if(flag == 1){
+			UART_Receive_Data((uint8_t *)z_values, 1000);
+			flag = 2;
+		}else if(flag == 2){
 			printf("recevied\n");
-			for(uint32_t i = 0; i < 300; i++){
-				printf("%f,%f,%f\n", x_values[i], y_values[i], z_values[i]);
+			READY = TRUE;
+			flag = 0;
+			UART_Receive_Data((uint8_t *)x_values, 1000);
 		}
-	}
 }
 
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart1){

@@ -86,7 +86,8 @@ extern AxesRaw_t axes_data;
 uint8_t bnrg_expansion_board = IDB04A1; /* at startup, suppose the X-NUCLEO-IDB04A1 is used */
 
 UART_HandleTypeDef huart1;
-extern float x_values[300], y_values[300], z_values[300];
+extern float x_values[250], y_values[250], z_values[250];
+extern BOOL READY;
 const uint32_t values[300] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 															0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 															0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,42,127,
@@ -145,7 +146,7 @@ void User_Process(AxesRaw_t* p_axes, uint8_t *counter);
 int main(void)
 {
   const char *name = "G10";
-  uint8_t SERVER_BDADDR[] = {0x12, 0x34, 0x00, 0xE1, 0x80, 0x03};
+  uint8_t SERVER_BDADDR[] = {0x11, 0x34, 0x00, 0xE1, 0x80, 0x03};
   uint8_t bdaddr[BDADDR_SIZE];
   uint16_t service_handle, dev_name_char_handle, appearance_char_handle;
   
@@ -305,8 +306,8 @@ int main(void)
 	
 	UART_Init(&huart1);
 	//memset(data_buffer_transmit, 2, 10);
-	//UART_Transmit_Data((uint8_t *)values, 1200);
-	UART_Receive_Data((uint8_t *)x_values, 1200);
+	UART_Transmit_Data((uint8_t *)values, 1200);
+	//UART_Receive_Data((uint8_t *)x_values, 1000);
 	//memset(data_buffer, 2, 10);
 	//BOOL flag = TRUE;
 	uint8_t vals1[250], vals2[250], vals3[250], vals4[250];
@@ -318,6 +319,13 @@ int main(void)
     HCI_Process();
 		 //x_Val_Update(float value)
     User_Process(&axes_data, &counter);
+		
+		if(READY){
+			for(uint16_t i = 0; i < 250; i++){
+				printf("%d = %f,%f,%f\n",i, x_values[i], y_values[i], z_values[i]);
+			}
+			READY = FALSE;
+		}
 //#if NEW_SERVICES
     //Update_Time_Characteristics();
 //#endif
@@ -369,24 +377,34 @@ void User_Process(AxesRaw_t* p_axes, uint8_t *counter)
 			float values2[10] = {999.9, 234.33, 202.21, 234.33, 202.21, 234.33, 202.21, 7.0, 8.34, 9.0233};
 			float values3[10] = {888.8, 234.33, 202.21, 234.33, 202.21, 234.33, 202.21, 7.0, 8.34, 9.0233};
 			//if(*counter == 0){
-				for(uint8_t i = 0; i < 10; i++){
-					x_Val_Update(values[i]);
+				for(uint8_t i = 0; i < 250; i++){
+					x_Val_Update(x_values[i]);
 					HAL_Delay(40);
+				}
+				for(uint8_t i = 0; i < 250; i++){
+					x_values[i] = 0;
 				}
 				HAL_Delay(40);
 				//(*counter)++;
 				printf("Sent X, counter = %d\n",*counter);
 //			}else if(*counter == 1){
-				for(uint8_t i = 0; i < 10; i++){
-					y_Val_Update(values2[i]);
+				for(uint8_t i = 0; i < 250; i++){
+					y_Val_Update(y_values[i]);
 					HAL_Delay(40);
 				}
+				for(uint8_t i = 0; i < 250; i++){
+					y_values[i] = 0;
+				}
+				HAL_Delay(40);
 //				(*counter)++;
 				printf("Sent Y, counter = %d\n",*counter);
 //			}else if(*counter == 2){
-				for(uint8_t i = 0; i < 10; i++){
-					z_Val_Update(values3[i]);
+				for(uint8_t i = 0; i < 250; i++){
+					z_Val_Update(z_values[i]);
 					HAL_Delay(40);
+				}
+				for(uint8_t i = 0; i < 250; i++){
+					z_values[i] = 0;
 				}
 //				*counter = 0;
 				printf("Sent Z, counter = %d\n",*counter);
