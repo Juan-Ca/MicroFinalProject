@@ -306,8 +306,8 @@ int main(void)
 	
 	UART_Init(&huart1);
 	//memset(data_buffer_transmit, 2, 10);
-	UART_Transmit_Data((uint8_t *)values, 1200);
-	//UART_Receive_Data((uint8_t *)x_values, 1000);
+	//UART_Transmit_Data((uint8_t *)values, 1200);
+	UART_Receive_Data((uint8_t *)x_values, 1000);
 	//memset(data_buffer, 2, 10);
 	//BOOL flag = TRUE;
 	uint8_t vals1[250], vals2[250], vals3[250], vals4[250];

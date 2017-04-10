@@ -1,4 +1,5 @@
 #include "nucleo_service.h"
+#include "uart.h"
 /**
  * @brief  Add a nucleo service using a vendor specific profile.
  *
@@ -29,7 +30,8 @@ extern float x_values[250], y_values[250], z_values[250];
 
 uint16_t nucleoServHandle, xAxisValHandle, yAxisValHandle, zAxisValHandle, angleValHandle;
 uint8_t angle_index = 0;
-float angles[10];
+
+float angles[250];
 
 tBleStatus Add_Nucleo_Service(void)
 {
@@ -156,16 +158,17 @@ tBleStatus z_Val_Update(float value)
  */
 void Attribute_Modified_Nucleo(uint16_t handle, uint8_t data_length, uint8_t *att_data){
 	if(handle == (angleValHandle + 1)){
-		if(angle_index < 10){
+		if(angle_index < 250){
 			float temp;
 			memcpy(&temp, att_data, data_length);
 			angles[angle_index] = temp;
 		}
-		angle_index = (angle_index >= 9) ? 0 : ++angle_index;
-		if(angle_index == 9){
-			for(uint8_t i = 0; i < 10; i++){
+		angle_index = (angle_index >= 249) ? 0 : ++angle_index;
+		if(angle_index == 0){
+			for(uint8_t i = 0; i < 250; i++){
 				printf("angles[%d] = %f\n", i, angles[i]);
 			}
+			UART_Transmit_Data((uint8_t *)angles, 1000);
 		}
 	}else{
 		printf("Unknown characteristic was modified\n");
