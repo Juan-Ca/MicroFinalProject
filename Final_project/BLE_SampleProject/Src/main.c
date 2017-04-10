@@ -365,29 +365,32 @@ void User_Process(AxesRaw_t* p_axes, uint8_t *counter)
       p_axes->AXIS_Z += 2;
       PRINTF("ACC: X=%6d Y=%6d Z=%6d\r\n", p_axes->AXIS_X, p_axes->AXIS_Y, p_axes->AXIS_Z);
       //Acc_Update(p_axes);
-			float values[10] = {1000.0, 234.33, 202.21, 234.33, 202.21, 234.33, 202.21, 7.0, 8.34, 9.0233};
-			if(*counter == 0){
+			float values[10] = {1000.0, 250.33, 202.21, 234.33, 202.21, 234.33, 202.21, 7.0, 8.34, 9.0233};
+			float values2[10] = {999.9, 234.33, 202.21, 234.33, 202.21, 234.33, 202.21, 7.0, 8.34, 9.0233};
+			float values3[10] = {888.8, 234.33, 202.21, 234.33, 202.21, 234.33, 202.21, 7.0, 8.34, 9.0233};
+			//if(*counter == 0){
 				for(uint8_t i = 0; i < 10; i++){
 					x_Val_Update(values[i]);
-					HAL_Delay(5);
+					HAL_Delay(40);
 				}
-				(*counter)++;
+				HAL_Delay(40);
+				//(*counter)++;
 				printf("Sent X, counter = %d\n",*counter);
-			}else if(*counter == 1){
+//			}else if(*counter == 1){
 				for(uint8_t i = 0; i < 10; i++){
-					y_Val_Update(values[i]);
-					HAL_Delay(5);
+					y_Val_Update(values2[i]);
+					HAL_Delay(40);
 				}
-				(*counter)++;
+//				(*counter)++;
 				printf("Sent Y, counter = %d\n",*counter);
-			}else if(*counter == 2){
+//			}else if(*counter == 2){
 				for(uint8_t i = 0; i < 10; i++){
-					z_Val_Update(values[i]);
-					HAL_Delay(5);
+					z_Val_Update(values3[i]);
+					HAL_Delay(40);
 				}
-				*counter = 0;
+//				*counter = 0;
 				printf("Sent Z, counter = %d\n",*counter);
-			}
+//			}
     }
   }
 }

@@ -31,5 +31,6 @@ tBleStatus Add_Nucleo_Service(void);
 tBleStatus x_Val_Update(float value);
 tBleStatus y_Val_Update(float value);
 tBleStatus z_Val_Update(float value);
+void Attribute_Modified_Nucleo(uint16_t handle, uint8_t data_length, uint8_t *att_data);
 
 #endif

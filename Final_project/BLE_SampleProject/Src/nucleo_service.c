@@ -16,9 +16,10 @@ do {\
 
 
 #define COPY_NUCLEO_SERVICE_UUID(uuid_struct)			COPY_UUID_128(uuid_struct,0x02,0x36,0x6e,0x80, 0xcf,0x3a, 0x11,0xe1, 0x9a,0xb4, 0x00,0x02,0xa5,0xd5,0xc5,0x1b)
-#define COPY_X_VALUES_UUID(uuid_struct)				COPY_UUID_128(uuid_struct,0xe2,0x3e,0x78,0xa0, 0xcf,0x4a, 0x11,0xe1, 0x8f,0xfc, 0x00,0x02,0xa5,0xd5,0xc5,0x1b)
-#define COPY_Y_VALUES_UUID(uuid_struct)       COPY_UUID_128(uuid_struct,0xcd,0x20,0xc4,0x80, 0xe4,0x8b, 0x11,0xe2, 0x84,0x0b, 0x00,0x02,0xa5,0xd5,0xc5,0x1b)
-#define COPY_Z_VALUES_UUID(uuid_struct)     	COPY_UUID_128(uuid_struct,0x01,0xc5,0x0b,0x60, 0xe4,0x8c, 0x11,0xe2, 0xa0,0x73, 0x00,0x02,0xa5,0xd5,0xc5,0x1b)
+#define COPY_X_VALUES_UUID(uuid_struct)						COPY_UUID_128(uuid_struct,0xe2,0x3e,0x78,0xa0, 0xcf,0x4a, 0x11,0xe1, 0x8f,0xfc, 0x00,0x02,0xa5,0xd5,0xc5,0x1b)
+#define COPY_Y_VALUES_UUID(uuid_struct)       		COPY_UUID_128(uuid_struct,0xcd,0x20,0xc4,0x80, 0xe4,0x8b, 0x11,0xe2, 0x84,0x0b, 0x00,0x02,0xa5,0xd5,0xc5,0x1b)
+#define COPY_Z_VALUES_UUID(uuid_struct)     			COPY_UUID_128(uuid_struct,0x01,0xc5,0x0b,0x60, 0xe4,0x8c, 0x11,0xe2, 0xa0,0x73, 0x00,0x02,0xa5,0xd5,0xc5,0x1b)
+#define COPY_ANGLE_VALUES_UUID(uuid_struct)  			COPY_UUID_128(uuid_struct,0x08,0x36,0x6e,0x80, 0xcf,0x3a, 0x11,0xe1, 0x9a,0xb4, 0x00,0x02,0xa5,0xd5,0xc5,0x1b)
 
 /* Store Value into a buffer in Little Endian Format */
 #define STORE_LE_16(buf, val)    ( ((buf)[0] =  (uint8_t) (val)    ) , \
@@ -26,8 +27,9 @@ do {\
 								   
 extern float x_values[250], y_values[250], z_values[250];
 
-uint16_t nucleoServHandle, xAxisValHandle, yAxisValHandle, zAxisValHandle;
-uint8_t x_index = 0, y_index = 0, z_index = 0;
+uint16_t nucleoServHandle, xAxisValHandle, yAxisValHandle, zAxisValHandle, angleValHandle;
+uint8_t angle_index = 0;
+float angles[10];
 
 tBleStatus Add_Nucleo_Service(void)
 {
@@ -36,7 +38,7 @@ tBleStatus Add_Nucleo_Service(void)
   uint8_t uuid[16];
   
   COPY_NUCLEO_SERVICE_UUID(uuid);
-  ret = aci_gatt_add_serv(UUID_TYPE_128,  uuid, PRIMARY_SERVICE, 12,
+  ret = aci_gatt_add_serv(UUID_TYPE_128,  uuid, PRIMARY_SERVICE, 16,
                           &nucleoServHandle);
   if (ret != BLE_STATUS_SUCCESS) goto fail;    
   
@@ -60,8 +62,14 @@ tBleStatus Add_Nucleo_Service(void)
 													 GATT_NOTIFY_READ_REQ_AND_WAIT_FOR_APPL_RESP,
                            16, 0, &zAxisValHandle);
   if (ret != BLE_STATUS_SUCCESS) goto fail;
+	
+	COPY_ANGLE_VALUES_UUID(uuid);
+	ret =  aci_gatt_add_char(nucleoServHandle, UUID_TYPE_128, uuid, 4,
+                           CHAR_PROP_WRITE | CHAR_PROP_WRITE_WITHOUT_RESP, ATTR_PERMISSION_NONE, GATT_NOTIFY_ATTRIBUTE_WRITE,
+                           16, 0, &angleValHandle);
+  if (ret != BLE_STATUS_SUCCESS) goto fail;
     
-  PRINTF("Service NUCLEO added. Handle 0x%04X, X axis Charac handle: 0x%04X, Y axis Charac handle: 0x%04X, Z axis Charac handle: 0x%04X\n", nucleoServHandle, xAxisValHandle, yAxisValHandle, zAxisValHandle);	
+  PRINTF("Service NUCLEO added. Handle 0x%04X, X axis Charac handle: 0x%04X, Y axis Charac handle: 0x%04X, Z axis Charac handle: 0x%04X, Angle Charac handle: 0x%04X\n", nucleoServHandle, xAxisValHandle, yAxisValHandle, zAxisValHandle, angleValHandle);	
   return BLE_STATUS_SUCCESS; 
   
 fail:
@@ -147,27 +155,18 @@ tBleStatus z_Val_Update(float value)
  * @retval None
  */
 void Attribute_Modified_Nucleo(uint16_t handle, uint8_t data_length, uint8_t *att_data){
-	if(handle == (xAxisValHandle + 1)){
-		if(x_index < 250){
+	if(handle == (angleValHandle + 1)){
+		if(angle_index < 10){
 			float temp;
 			memcpy(&temp, att_data, data_length);
-			x_values[x_index] = temp;
+			angles[angle_index] = temp;
 		}
-		x_index = (x_index >= 249) ? 0 : ++x_index;
-	}else if(handle == (yAxisValHandle + 1)){
-		if(y_index < 250){
-			float temp;
-			memcpy(&temp, att_data, data_length);
-			y_values[y_index] = temp;
+		angle_index = (angle_index >= 9) ? 0 : ++angle_index;
+		if(angle_index == 9){
+			for(uint8_t i = 0; i < 10; i++){
+				printf("angles[%d] = %f\n", i, angles[i]);
+			}
 		}
-		y_index = (y_index >= 249) ? 0 : ++y_index;	
-	}else if(handle == (zAxisValHandle + 1)){
-		if(z_index < 250){
-			float temp;
-			memcpy(&temp, att_data, data_length);
-			z_values[z_index] = temp;
-		}
-		z_index = (z_index >= 249) ? 0 : ++z_index;	
 	}else{
 		printf("Unknown characteristic was modified\n");
 	}

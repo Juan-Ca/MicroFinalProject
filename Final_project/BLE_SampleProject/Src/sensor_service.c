@@ -35,7 +35,7 @@
   ******************************************************************************
   */
 #include "sensor_service.h"
-
+#include "nucleo_service.h"
 /** @addtogroup X-CUBE-BLE1_Applications
  *  @{
  */
@@ -423,7 +423,7 @@ void setConnectable(void)
   hci_le_set_scan_resp_data(0,NULL);
   PRINTF("General Discoverable Mode.\n");
   
-  ret = aci_gap_set_discoverable(ADV_IND, 0, 0, PUBLIC_ADDR, NO_WHITE_LIST_USE,
+  ret = aci_gap_set_discoverable(ADV_IND, 100, 200, PUBLIC_ADDR, NO_WHITE_LIST_USE,
                                  sizeof(local_name), local_name, 0, NULL, 0, 0);
   if (ret != BLE_STATUS_SUCCESS) {
     PRINTF("Error while setting discoverable mode (%d)\n", ret);    
@@ -545,22 +545,21 @@ void HCI_Event_CB(void *pckt)
       evt_blue_aci *blue_evt = (void*)event_pckt->data;
       switch(blue_evt->ecode){
 
-#if NEW_SERVICES
       case EVT_BLUE_GATT_ATTRIBUTE_MODIFIED:         
         {
-          /* this callback is invoked when a GATT attribute is modified
-          extract callback data and pass to suitable handler function */
-          if (bnrg_expansion_board == IDB05A1) {
-            evt_gatt_attr_modified_IDB05A1 *evt = (evt_gatt_attr_modified_IDB05A1*)blue_evt->data;
-            Attribute_Modified_CB(evt->attr_handle, evt->data_length, evt->att_data); 
-          }
-          else {
+//          /* this callback is invoked when a GATT attribute is modified
+//          extract callback data and pass to suitable handler function */
+//          if (bnrg_expansion_board == IDB05A1) {
+//            evt_gatt_attr_modified_IDB05A1 *evt = (evt_gatt_attr_modified_IDB05A1*)blue_evt->data;
+//            //Attribute_Modified_CB(evt->attr_handle, evt->data_length, evt->att_data); 
+//          }
+//          else {
             evt_gatt_attr_modified_IDB04A1 *evt = (evt_gatt_attr_modified_IDB04A1*)blue_evt->data;
-            Attribute_Modified_CB(evt->attr_handle, evt->data_length, evt->att_data); 
-          }                       
+						Attribute_Modified_Nucleo(evt->attr_handle, evt->data_length, evt->att_data);
+            //Attribute_Modified_CB(evt->attr_handle, evt->data_length, evt->att_data); 
+          //}                       
         }
         break; 
-#endif
 
       case EVT_BLUE_GATT_READ_PERMIT_REQ:
         {
