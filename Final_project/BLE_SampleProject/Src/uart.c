@@ -1,3 +1,14 @@
+/**
+  ******************************************************************************
+  * File Name          : uart.c
+  * Description        : Initialization, configuration and utilization functions,
+	* Author						 : Luis Gallet
+  * Group              : 10	
+	* Version            : 3.0.0
+	* Date							 : April 23th, 2017
+  ******************************************************************************
+  */
+  
 #include "uart.h"
 #include "supporting_functions.h"
 
@@ -9,7 +20,12 @@ static void GPIO_UART_Init(void);
 float x_values[250], y_values[250], z_values[250];
 
 BOOL READY = FALSE;
+static int flag = 0;
 
+/* Function: UART_Init()
+* Input : UART_HandleTypeDef* huart
+* Description: Initialize UART and its interrupt
+*/
 void UART_Init(UART_HandleTypeDef* huart){
 	/*
 		Initialize UART TX and RX GPIO pins
@@ -30,12 +46,12 @@ void UART_Init(UART_HandleTypeDef* huart){
     printf("HAL_UART_Init error\n");
   }
 	Init_NVIC_Interrupt(USART1_IRQn, 0, 1);	
-	
-//	memset(x_values, 0.0, 300);
-//	memset(y_values, 0.0, 300);
-//	memset(z_values, 0.0, 300);
 }
 
+/* Function: UART_Receive_Data()
+* Input : uint8_t *buffer, uint32_t length
+* Description: Enables interrupt to be prepared to receive data
+*/
 HAL_StatusTypeDef UART_Receive_Data(uint8_t *buffer, uint32_t length){
 	HAL_StatusTypeDef status;
 	
@@ -47,6 +63,10 @@ HAL_StatusTypeDef UART_Receive_Data(uint8_t *buffer, uint32_t length){
 	return status;
 }
 
+/* Function: UART_Transmit_Data()
+* Input : uint8_t *buffer, uint32_t length
+* Description: Enables interrupt to send data
+*/
 HAL_StatusTypeDef UART_Transmit_Data(uint8_t *buffer, uint32_t length){
 	HAL_StatusTypeDef status;
 	
@@ -58,6 +78,10 @@ HAL_StatusTypeDef UART_Transmit_Data(uint8_t *buffer, uint32_t length){
 	return status;
 }
 
+/* Function: GPIO_UART_Init()
+* Input : none
+* Description: Initialize UART GPIOs
+*/
 void GPIO_UART_Init(void){
 	GPIO_InitTypeDef GPIO_InitStruct; 
 	/* Peripheral clock enable */
@@ -75,25 +99,30 @@ void GPIO_UART_Init(void){
 	GPIO_InitStruct.Alternate = GPIO_AF7_USART1;
 	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 }
-int flag = 0;
+
+/* Function: HAL_UART_RxCpltCallback()
+* Input : UART_HandleTypeDef *huart1
+* Description: Callback when data is received
+*/
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart1){
-	if(huart1->Instance == USART1){
-		
-		}
-		if(flag == 0){
-			UART_Receive_Data((uint8_t *)y_values, 1000);
-			flag = 1;
-		}else if(flag == 1){
-			UART_Receive_Data((uint8_t *)z_values, 1000);
-			flag = 2;
-		}else if(flag == 2){
-			printf("recevied\n");
-			READY = TRUE;
-			flag = 0;
-			UART_Receive_Data((uint8_t *)x_values, 1000);
-		}
+	if(flag == 0){
+		UART_Receive_Data((uint8_t *)y_values, 1000);
+		flag = 1;
+	}else if(flag == 1){
+		UART_Receive_Data((uint8_t *)z_values, 1000);
+		flag = 2;
+	}else if(flag == 2){
+		printf("recevied\n");
+		READY = TRUE;
+		flag = 0;
+		UART_Receive_Data((uint8_t *)x_values, 1000);
+	}
 }
 
+/* Function: HAL_UART_TxCpltCallback()
+* Input : UART_HandleTypeDef *huart1
+* Description: Callback when data is sent
+*/
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart1){
 	printf("sent\n");
 }

@@ -1,3 +1,14 @@
+/**
+  ******************************************************************************
+  * File Name          : nucleo_service.c
+  * Description        : Initialization, configuration and utilization functions,
+	* Author						 : Luis Gallet
+  * Group              : 10	
+	* Version            : 3.0.0
+	* Date							 : April 23th, 2017
+  ******************************************************************************
+  */
+  
 #include "nucleo_service.h"
 #include "uart.h"
 /**
@@ -33,6 +44,11 @@ uint8_t angle_index = 0;
 
 float angles[250];
 
+
+/* Function: Add_Nucleo_Service()
+* Input : none
+* Description: Initialize and add Nucleo service, with four characteristics
+*/
 tBleStatus Add_Nucleo_Service(void)
 {
   tBleStatus ret;
@@ -80,12 +96,10 @@ fail:
     
 }
 
-/**
- * @brief  Update Nucleo characteristic value.
- *
- * @param  Array of float values
- * @retval Status
- */
+/* Function: x_Val_Update()
+* Input : float value
+* Description: updates new value to characteristic
+*/
 tBleStatus x_Val_Update(float value)
 {  
   tBleStatus ret;    
@@ -103,12 +117,10 @@ tBleStatus x_Val_Update(float value)
   return BLE_STATUS_SUCCESS;	
 }
 
-/**
- * @brief  Update Nucleo characteristic value.
- *
- * @param  Array of float values
- * @retval Status
- */
+/* Function: y_Val_Update()
+* Input : float value
+* Description: updates new value to characteristic
+*/
 tBleStatus y_Val_Update(float value)
 {  
   tBleStatus ret;    
@@ -125,12 +137,10 @@ tBleStatus y_Val_Update(float value)
 	PRINTF("Sent data\n") ;
   return BLE_STATUS_SUCCESS;	
 }
-/**
- * @brief  Update Nucleo characteristic value.
- *
- * @param  Array of float values
- * @retval Status
- */
+/* Function: z_Val_Update()
+* Input : float value
+* Description: updates new value to characteristic
+*/
 tBleStatus z_Val_Update(float value)
 {  
   tBleStatus ret;    
@@ -148,14 +158,10 @@ tBleStatus z_Val_Update(float value)
   return BLE_STATUS_SUCCESS;	
 }
 
-/**
- * @brief  This function is called attribute value corresponding to 
- *         ledButtonCharHandle characteristic gets modified.
- * @param  Handle of the attribute
- * @param  Size of the modified attribute data
- * @param  Pointer to the modified attribute data
- * @retval None
- */
+/* Function: Attribute_Modified_Nucleo()
+* Input : uint16_t handle, uint8_t data_length, uint8_t *att_data
+* Description: When a characteristic is modified from client side, this function is called
+*/
 void Attribute_Modified_Nucleo(uint16_t handle, uint8_t data_length, uint8_t *att_data){
 	if(handle == (angleValHandle + 1)){
 		if(angle_index < 250){

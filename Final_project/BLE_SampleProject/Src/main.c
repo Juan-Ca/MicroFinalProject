@@ -99,14 +99,6 @@ const uint32_t values[300] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 															2995,2938,2880,2820,2759,2697,2634,2570,2504,2437,2370,2301,2231,2160,2089,2016,1943,1868,1793,1717,1640,
 															1563,1485,1406,1326,1246,1166,1085,1003,921,839,756,673,589,506,422,338,253,169,84,0};
 
-//const float values[250] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-//													 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-//													 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,42,127,
-//													 211,295,380,464,547,631,714,797,880,962,1044,1125,1206,1286,1366,1445,1524,1602,1679,1755,1831,1905,1979,
-//													 2053,2125,2196,2266,2335,2404,2471,2537,2602,2666,2728,2790,2850,2909,2967,3023,3078,3132,3184,3235,3284,
-//													 3332,3379,3424,3467,3509,3550,3589,3626,3661,3696,3728,3759,3788,3815,3841,3865,3888,3908,3927,3944,3960,
-//													 3973,3985,3996,4004,0,0,0,0,0,4017,4013,4008,4000,3991,3980,3967,3952,3936,3918,3898,3877,
-//													 3853,3828,3802,3774,3744,3712,3679,3644,3607,3569,3530,3488};
 /**
  * @}
  */
@@ -258,20 +250,7 @@ int main(void)
   }
   
   PRINTF("SERVER: BLE Stack Initialized\n");
-  
-//  ret = Add_Acc_Service();
-//  
-//  if(ret == BLE_STATUS_SUCCESS)
-//    PRINTF("Acc service added successfully.\n");
-//  else
-//    PRINTF("Error while adding Acc service.\n");
-  
-//  ret = Add_Environmental_Sensor_Service();
-//  
-//  if(ret == BLE_STATUS_SUCCESS)
-//    PRINTF("Environmental Sensor service added successfully.\n");
-//  else
-//    PRINTF("Error while adding Environmental Sensor service.\n");
+
   ret = Add_Nucleo_Service();
 
   if(ret == BLE_STATUS_SUCCESS)
@@ -305,14 +284,9 @@ int main(void)
   ret = aci_hal_set_tx_power_level(1,4);
 	
 	UART_Init(&huart1);
-	//memset(data_buffer_transmit, 2, 10);
-	//UART_Transmit_Data((uint8_t *)values, 1200);
+	
 	UART_Receive_Data((uint8_t *)x_values, 1000);
-	//memset(data_buffer, 2, 10);
-	//BOOL flag = TRUE;
-	uint8_t vals1[250], vals2[250], vals3[250], vals4[250];
-	int32_t received[250];
-	char flag = 0;
+
 	uint8_t counter = 0;
   while(1)
   {
@@ -325,22 +299,7 @@ int main(void)
 				printf("%d = %f,%f,%f\n",i, x_values[i], y_values[i], z_values[i]);
 			}
 			READY = FALSE;
-		}
-//#if NEW_SERVICES
-    //Update_Time_Characteristics();
-//#endif
-//		if(flag){
-//			HAL_UART_Receive(&huart1, data_buffer, 10, 10000);
-//			flag = FALSE;
-//			for(uint8_t i = 0; i < 10; i++){
-//				printf("data_buffer[%d]= %d\n", i, data_buffer[i]);
-//			}
-//			
-//		}
-		//printf("data_buffer[0]= %d\n", data_buffer[0]);
-		//HAL_UART_Transmit(&huart1, data_buffer, 10, 2000);
-		//printf("uart status code = %d\n", HAL_UART_GetState(&huart1));
-		
+		}		
   }
 }
 
@@ -367,47 +326,39 @@ void User_Process(AxesRaw_t* p_axes, uint8_t *counter)
     
     if(connected)
     {
-      /* Update acceleration data */
-      p_axes->AXIS_X += 1;
-      p_axes->AXIS_Y -= 1;
-      p_axes->AXIS_Z += 2;
-      PRINTF("ACC: X=%6d Y=%6d Z=%6d\r\n", p_axes->AXIS_X, p_axes->AXIS_Y, p_axes->AXIS_Z);
-      //Acc_Update(p_axes);
-			float values[10] = {1000.0, 250.33, 202.21, 234.33, 202.21, 234.33, 202.21, 7.0, 8.34, 9.0233};
-			float values2[10] = {999.9, 234.33, 202.21, 234.33, 202.21, 234.33, 202.21, 7.0, 8.34, 9.0233};
-			float values3[10] = {888.8, 234.33, 202.21, 234.33, 202.21, 234.33, 202.21, 7.0, 8.34, 9.0233};
-			//if(*counter == 0){
-				for(uint8_t i = 0; i < 250; i++){
-					x_Val_Update(x_values[i]);
-					HAL_Delay(40);
-				}
-				for(uint8_t i = 0; i < 250; i++){
-					x_values[i] = 0;
-				}
-				HAL_Delay(40);
-				//(*counter)++;
-				printf("Sent X, counter = %d\n",*counter);
+      
+	//if(*counter == 0){
+		for(uint8_t i = 0; i < 250; i++){
+			x_Val_Update(x_values[i]);
+			HAL_Delay(40);
+		}
+		for(uint8_t i = 0; i < 250; i++){
+			x_values[i] = 0;
+		}
+		HAL_Delay(40);
+		//(*counter)++;
+		printf("Sent X, counter = %d\n",*counter);
 //			}else if(*counter == 1){
-				for(uint8_t i = 0; i < 250; i++){
-					y_Val_Update(y_values[i]);
-					HAL_Delay(40);
-				}
-				for(uint8_t i = 0; i < 250; i++){
-					y_values[i] = 0;
-				}
-				HAL_Delay(40);
+		for(uint8_t i = 0; i < 250; i++){
+			y_Val_Update(y_values[i]);
+			HAL_Delay(40);
+		}
+		for(uint8_t i = 0; i < 250; i++){
+			y_values[i] = 0;
+		}
+		HAL_Delay(40);
 //				(*counter)++;
-				printf("Sent Y, counter = %d\n",*counter);
+		printf("Sent Y, counter = %d\n",*counter);
 //			}else if(*counter == 2){
-				for(uint8_t i = 0; i < 250; i++){
-					z_Val_Update(z_values[i]);
-					HAL_Delay(40);
-				}
-				for(uint8_t i = 0; i < 250; i++){
-					z_values[i] = 0;
-				}
+		for(uint8_t i = 0; i < 250; i++){
+			z_Val_Update(z_values[i]);
+			HAL_Delay(40);
+		}
+		for(uint8_t i = 0; i < 250; i++){
+			z_values[i] = 0;
+		}
 //				*counter = 0;
-				printf("Sent Z, counter = %d\n",*counter);
+		printf("Sent Z, counter = %d\n",*counter);
 //			}
     }
   }
